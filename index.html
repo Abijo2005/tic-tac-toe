@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fancy Tic-Tac-Toe</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .game-container {
+            text-align: center;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            width: 120px;
+            height: 120px;
+            background: #fff;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .cell:hover {
+            background: #f0f0f0;
+            transform: scale(1.05);
+        }
+
+        .cell.X {
+            color: #ff4b5c;
+        }
+
+        .cell.O {
+            color: #1fab89;
+        }
+
+        #message {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #fff;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: #f0f0f0;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="message">Player X's turn</div>
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <button onclick="resetGame()">Restart Game</button>
+    </div>
+
+    <script>
+        const board = Array(9).fill(null);
+        let currentPlayer = 'X';
+        let gameOver = false;
+
+        const cells = document.querySelectorAll('.cell');
+        const message = document.getElementById('message');
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                const index = cell.dataset.index;
+                if (!board[index] && !gameOver) {
+                    board[index] = currentPlayer;
+                    cell.textContent = currentPlayer;
+                    cell.classList.add(currentPlayer); // add color class
+                    if (checkWin(currentPlayer)) {
+                        message.textContent = `Player ${currentPlayer} wins!`;
+                        gameOver = true;
+                        highlightWin(currentPlayer);
+                    } else if (board.every(cell => cell)) {
+                        message.textContent = "It's a draw!";
+                        gameOver = true;
+                    } else {
+                        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                        message.textContent = `Player ${currentPlayer}'s turn`;
+                    }
+                }
+            });
+        });
+
+        function checkWin(player) {
+            const winCombos = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
+            ];
+            return winCombos.some(combo => combo.every(i => board[i] === player));
+        }
+
+        function highlightWin(player) {
+            const winCombos = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
+            ];
+            winCombos.forEach(combo => {
+                if (combo.every(i => board[i] === player)) {
+                    combo.forEach(i => {
+                        cells[i].style.background = player === 'X' ? '#ffb3b3' : '#b3ffd9';
+                        cells[i].style.transform = 'scale(1.1)';
+                    });
+                }
+            });
+        }
+
+        function resetGame() {
+            board.fill(null);
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('X', 'O');
+                cell.style.background = '#fff';
+                cell.style.transform = 'scale(1)';
+            });
+            currentPlayer = 'X';
+            gameOver = false;
+            message.textContent = `Player ${currentPlayer}'s turn`;
+        }
+    </script>
+</body>
+</html>
